@@ -13,8 +13,9 @@ class ServerSetup extends LongKeyedMapper[ServerSetup] with IdPK with ManyToMany
 	object ldap_bind_base extends MappedString(this, 100)
 	object ldap_bind_dn extends MappedString(this, 100)
 	object ldap_bind_pw extends MappedString(this, 100)
-	
+
 	object ldap_user_searchString extends MappedString(this, 200)
+	object ldap_group_searchString extends MappedString(this, 200)
 
 }
 

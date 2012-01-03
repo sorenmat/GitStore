@@ -120,14 +120,6 @@ object LDAPUtil {
 				val memberof = bas.get("distinguishedName")
 				return searchUser(memberof.toString(), password, projectName)
 			}
-
-			val answer = context.search("", "(objectclass=group)", ctrl)
-			while (answer.hasMore()) {
-				val result = enumeration.next().asInstanceOf[SearchResult]
-				val attribs = result.getAttributes()
-				println("------------> " + attribs.get("cn"))
-			}
-
 		} catch {
 			case e: Exception => e.printStackTrace()
 		}

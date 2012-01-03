@@ -30,6 +30,17 @@ class ServerAdmin {
 			bind("serveradmin", form,
 				"basepath" -> servetsetup.basepath.toForm,
 				"repositoryname" -> servetsetup.name.toForm,
+
+				"ldap_enabled" -> servetsetup.ldap_enabled.toForm,
+				"ldap_url" -> servetsetup.ldap_bind_url.toForm,
+
+				"ldap_base" -> servetsetup.ldap_bind_base.toForm,
+				"ldap_dn" -> servetsetup.ldap_bind_dn.toForm,
+				"ldap_pw" -> servetsetup.ldap_bind_pw.toForm,
+
+				"ldap_user_search" -> servetsetup.ldap_user_searchString.toForm,
+				"ldap_group_search" -> servetsetup.ldap_group_searchString.toForm,
+
 				"submit" -> submit("Save", checkAndSave))
 
 		doBind(form)
