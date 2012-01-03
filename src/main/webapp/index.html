@@ -1,0 +1,32 @@
+<lift:surround with="default" at="content" xmlns:instance="http://www.w3.org/1999/xhtml" xmlns:entry="http://www.w3.org/1999/xhtml">
+	
+	    <table width="95%">
+            <thead>
+                <tr>
+                    <th>Repository name</th>
+                    <th>usage</th>
+                </tr>
+            </thead>
+            <tbody id="entry_table">
+
+		<lift:snippet type="ShowRepositories.render">
+	
+                    <tr>
+                    <td>
+                    <log:reponame/>
+                    </td>
+
+                    <td>
+                    <log:graph/>
+                    </td>
+                    </tr>
+
+
+                
+            </lift:snippet>
+
+            </tbody>
+        </table>
+    
+    <lift:msgs/>
+</lift:surround>

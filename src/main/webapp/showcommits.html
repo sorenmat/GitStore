@@ -1,0 +1,36 @@
+<lift:surround with="default" at="content" xmlns:instance="http://www.w3.org/1999/xhtml" xmlns:entry="http://www.w3.org/1999/xhtml">
+   
+        <table width="95%">
+            <thead>
+                <tr>
+                    <th>Commiter</th>
+                    <th>Comment</th>
+                    <th>Date</th> 
+                </tr>
+            </thead>
+            <tbody id="entry_table">
+
+            <lift:snippet type="ShowCommits.myrender">
+                    <tr>
+
+                    <td>
+                    <log:commiterPicture/>
+                    <log:commiter/>
+                    </td>
+
+                    <td>
+                    <log:comment/>
+                    </td>
+
+                    <td>
+                    <log:date/>
+                    </td>
+
+                    </tr>
+
+                
+            </lift:snippet>
+
+            </tbody>
+        </table>
+</lift:surround>

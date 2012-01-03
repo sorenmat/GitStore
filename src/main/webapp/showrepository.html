@@ -1,0 +1,36 @@
+<lift:surround with="default" at="content" xmlns:instance="http://www.w3.org/1999/xhtml" xmlns:entry="http://www.w3.org/1999/xhtml">
+	  <ul class="tabs">
+  <li class="active"><a href="#home">Home</a></li>
+  <li><a href="/showcommits">Commits</a></li>
+  <li><a href="/repositorysettings">Settings</a></li>
+</ul>
+<ul class="breadcrumb">
+<lift:snippet type="ShowRepository.breadcrumb"/>
+</ul>
+	    <table width="95%" class="condensed">
+            <thead>
+                <tr>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="entry_table">
+
+		<lift:snippet type="ShowRepository.render">
+	
+                    <tr>
+
+                    <td width="10">
+                    <filetree:icon/>
+                    </td>
+                    
+                    <td>
+                    <filetree:filename/>
+                    </td>
+                    
+                    </tr>
+            </lift:snippet>
+
+            </tbody>
+        </table>
+    
+</lift:surround>

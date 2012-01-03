@@ -1,0 +1,214 @@
+<lift:surround with="default" at="content" xmlns:instance="http://www.w3.org/1999/xhtml" xmlns:entry="http://www.w3.org/1999/xhtml">
+<style type="text/css">
+
+table {
+	margin-bottom:5px !important;
+}
+
+
+span.empty {
+	font-size: 0.9em;
+	font-style: italic;
+	padding-left:10px;
+	color: #008000;
+}
+
+
+
+div.header, div.commitHeader, table.repositories th {
+	background-color:#e0e0e0;
+	background-repeat:repeat-x;
+	background-image:-khtml-gradient(linear, left top, left bottom, from(#ffffff), to(#e0e0e0));
+	background-image:-moz-linear-gradient(top, #ffffff, #e0e0e0);
+	background-image:-ms-linear-gradient(top, #ffffff, #e0e0e0);
+	background-image:-webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100%, #e0e0e0));
+	background-image:-webkit-linear-gradient(top, #ffffff, #e0e0e0);
+	background-image:-o-linear-gradient(top, #ffffff, #e0e0e0);
+	background-image:linear-gradient(top, #ffffff, #e0e0e0);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e0e0e0', GradientType=0);
+	-webkit-box-shadow:inset 0 1px 0 #ffffff;
+	-moz-box-shadow:inset 0 1px 0 #ffffff;
+	box-shadow:inset 0 1px 0 #ffffff;	
+}
+
+div.header {
+	padding: 3px;
+	border: 1px solid #ddd;
+	border-bottom: 0;
+	border-radius: 3px 3px 0 0;
+}
+
+div.commitHeader {
+	margin:0 0 2px;
+	padding:7px 14px;	
+	border:1px solid #ddd;
+	border-radius: 3px;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;border-radius:3px;
+}
+
+div.header a, div.commitHeader a {
+	color: black;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+div.header a:hover, div.commitHeader a:hover {
+	text-decoration: underline;
+}
+
+
+
+div.diff {
+	font-family: monospace;
+	overflow: auto;
+}
+
+div.diff.header {
+	-moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #EDECE6;
+    border-color: #D9D8D1;
+    border-style: solid;
+    border-width: 1px;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 4px 0 2px;
+}
+
+div.diff.extended_header {
+	background-color: #F6F5EE;
+    padding: 2px 0;
+    font-family: inherit;
+}
+
+span.diff.add {
+	color: #008800;
+	font-family: inherit;
+}
+
+span.diff.remove {
+	color: #FFDDDD;
+	font-family: inherit;
+}
+
+span.diff.unchanged {
+	color: inherit;
+	font-family: inherit;
+}
+
+div.diff.hunk_header {
+	-moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #FFE0FF;
+    border-style: dotted;
+    border-width: 1px 0 0;
+    margin-top: 2px;
+    font-family: inherit;
+}
+
+span.diff.hunk_info {
+	background-color: #FFEEFF;	
+	color: #990099;
+	font-family: inherit;
+}
+
+span.diff.hunk_section {	
+	color: #AA22AA;
+	font-family: inherit;
+}
+
+div.diff.add2 {
+	background-color: #DDFFDD;
+    font-family: inherit;
+}
+
+div.diff.remove2 {
+	background-color: #FFDDDD;
+    font-family: inherit;
+}
+
+div.diff table {
+	border-radius: 0;
+	border-right: 1px solid #bbb;
+	border-bottom: 1px solid #bbb;
+	width: 100%;
+}
+
+div.diff table th, div.diff table td {
+	margin: 0px;
+	padding: 0px;
+	font-family: monospace;
+	border: 0;
+}
+
+div.diff table th {
+	background-color: #f0f0f0;
+	text-align: center;
+	color: #999;
+	padding-left: 5px;
+	padding-right: 5px;
+	width: 30px;
+}
+
+div.diff table th.header {
+	background-color: #D2C3AF;
+	border-right: 0px;
+	border-bottom: 1px solid #808080;
+	font-family: inherit;
+	font-size:0.9em;
+	color: black;
+	padding: 2px;
+	text-align: left;
+}
+
+div.diff table td.hunk_header {
+	background-color: #dAe2e5 !important;
+	border-top: 1px solid #bac2c5;	
+	border-bottom: 1px solid #bac2c5;
+	color: #555;
+}
+
+div.diff table td {
+	border-left: 1px solid #bbb;
+	background-color: #f5f5f5;
+}
+
+td.changeType {
+	width: 15px;
+}
+
+span.addition, span.modification, span.deletion, span.rename {
+	border: 1px solid #888;
+	float: left;
+	height: 0.8em;
+	margin: 0.2em 0.5em 0 0;
+	overflow: hidden;
+	width: 0.8em;
+}
+
+span.addition {
+	background-color: #ccffcc;
+}
+
+span.modification {
+	background-color: #ffdd88;
+}
+
+span.deletion {
+	background-color: #f8bbbb;
+}
+
+span.rename {
+	background-color: #cAc2f5;
+}
+
+</style>
+	<lift:snippet type="ShowRevision.render"/>       
+</lift:surround>

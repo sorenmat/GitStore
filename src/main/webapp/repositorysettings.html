@@ -1,0 +1,31 @@
+<lift:surround with="default" at="content" xmlns:instance="http://www.w3.org/1999/xhtml" xmlns:entry="http://www.w3.org/1999/xhtml">
+     <lift:RepositorySettings.render form="post">
+        <table>
+
+          <tr>
+           <td>Access Groups:</td>
+           <td><serveradmin:groups>To Do</serveradmin:groups></td>
+          </tr>
+
+ 		<tr>
+           <td>Users:</td>
+           <td><serveradmin:users>To Do</serveradmin:users></td>
+          </tr>
+           <tr>
+           <td>&nbsp;</td>
+           <td>
+             <serveradmin:adduser/>
+           </td>
+          </tr>
+          
+          
+          <tr>
+           <td>&nbsp;</td>
+           <td>
+             <serveradmin:submit/>
+           </td>
+          </tr>
+        </table>
+       </lift:RepositorySettings.render>
+       
+</lift:surround>
