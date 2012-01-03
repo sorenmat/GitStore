@@ -8,34 +8,18 @@ import org.eclipse.jgit.lib.Constants._
 
 class GitWebDiffFormatter(os: OutputStream) extends DiffFormatter(os) {
 
-	/**
-	 * Output a hunk header
-	 *
-	 * @param aStartLine
-	 *            within first source
-	 * @param aEndLine
-	 *            within first source
-	 * @param bStartLine
-	 *            within second source
-	 * @param bEndLine
-	 *            within second source
-	 * @throws IOException
-	 */
 	override def writeHunkHeader(aStartLine: Int, aEndLine: Int, bStartLine: Int, bEndLine: Int) {
-		os.write("<div class=\"diff hunk_header\"><span class=\"diff hunk_info\">".getBytes());
-		os.write('@');
-		os.write('@');
-		writeRange('-', aStartLine + 1, aEndLine - aStartLine);
-		writeRange('+', bStartLine + 1, bEndLine - bStartLine);
-		os.write(' ');
-		os.write('@');
-		os.write('@');
-		os.write("</span></div>".getBytes());
+		os.write("<div class=\"diff hunk_header\"><span class=\"diff hunk_info\">".getBytes())
+		os.write("@@".getBytes())
+		writeRange('-', aStartLine + 1, aEndLine - aStartLine)
+		writeRange('+', bStartLine + 1, bEndLine - bStartLine)
+		os.write(" @@".getBytes())
+		os.write("</span></div>".getBytes())
 	}
 
 	def writeRange(prefix: Char, begin: Int, cnt: Int) {
-		os.write(' ');
-		os.write(prefix);
+		os.write(' ')
+		os.write(prefix)
 		cnt match {
 			case 0 =>
 				// If the range is empty, its beginning number must
@@ -46,92 +30,68 @@ class GitWebDiffFormatter(os: OutputStream) extends DiffFormatter(os) {
 				// based,
 				// so an empty file would produce "0,0".
 				//
-				os.write(encodeASCII(begin - 1));
-				os.write(',');
-				os.write('0');
+				os.write(encodeASCII(begin - 1))
+				os.write(',')
+				os.write('0')
 
 			case 1 =>
 				// If the range is exactly one line, produce only
 				// the number.
 				//
-				os.write(encodeASCII(begin));
+				os.write(encodeASCII(begin))
 
 			case _ =>
-				os.write(encodeASCII(begin));
-				os.write(',');
-				os.write(encodeASCII(cnt));
+				os.write(encodeASCII(begin))
+				os.write(',')
+				os.write(encodeASCII(cnt))
 		}
 	}
 
 	override def writeLine(prefix: Char, text: RawText, cur: Int) {
-		val bos = new ByteArrayOutputStream();
-		val myline = text.getString(1)
-		text.writeLine(bos, cur);
-		var line = bos.toString();
-		line = escapeForHtml(line, false);
+		val bos = new ByteArrayOutputStream()
+		text.writeLine(bos, cur)
+		var line = bos.toString()
+		line = escape(line, false)
 		line = line.replaceAll("\n", "<br/>\n")
 
-		prefix match {
+		val data = prefix match {
 			case '+' =>
-				os.write("<span class=\"clean-gray\">".getBytes());
-				os.write(line.getBytes());
-				os.write("</span>\n".getBytes());
+				"<span class=\"clean-gray\">"+line+"</span>\n"
 			case '-' =>
-				os.write("<span class=\"diff-red\">".getBytes());
-				os.write(line.getBytes());
-				os.write("</span>\n".getBytes());
-			case _ => //os.write("<br/>\n".getBytes());
+				"<span class=\"diff-red\">"+line+"</span>\n"
+			case _ => "<br/><br/><br/>\n"
 		}
-
+		os.write(data.getBytes)
 	}
 
-	/**
-	 * Workaround function for complex private methods in DiffFormatter. This
-	 * sets the html for the diff headers.
-	 *
-	 * @return
-	 */
 	def getHtml(): String = {
-		val html = os.toString();
-		val lines = html.split("\n");
-		val sb = new StringBuilder();
-		sb.append("<div class=\"diff\">");
-		for (line <- lines) {
+		val html = os.toString()
+		val lines = html.split("\n")
+		
+		"<div class=\"diff\">"+lines.map(line => {
 			if (line.startsWith("diff")) {
-				sb.append("<div class=\"diff header\">").append(line).append("</div>");
+				"<div class=\"diff header\">"+line+"</div>"
 			} else if (line.startsWith("---")) {
-				sb.append("<span class=\"diff remove\">").append(line).append("</span><br/>");
+				"<span class=\"diff remove\">"+line+"</span><br/>"
 			} else if (line.startsWith("+++")) {
-				sb.append("<span class=\"diff add\">").append(line).append("</span><br/>");
+				"<span class=\"diff add\">"+line+"</span><br/>"
 			} else {
-				sb.append(line).append('\n');
+				line+'\n'
 			}
-		}
-		sb.append("</div>\n");
-		return sb.toString();
+		})+"</div>\n"
 	}
 
-	def escapeForHtml(inStr: String, changeSpace: Boolean): String = {
-		val retStr = new StringBuffer();
-		var i = 0;
-		while (i < inStr.length()) {
-			if (inStr.charAt(i) == '&') {
-				retStr.append("&amp;");
-			} else if (inStr.charAt(i) == '<') {
-				retStr.append("&lt;");
-			} else if (inStr.charAt(i) == '>') {
-				retStr.append("&gt;");
-			} else if (inStr.charAt(i) == '\"') {
-				retStr.append("&quot;");
-			} else if (changeSpace && inStr.charAt(i) == ' ') {
-				retStr.append("&nbsp;");
-			} else if (changeSpace && inStr.charAt(i) == '\t') {
-				retStr.append(" &nbsp; &nbsp;");
-			} else {
-				retStr.append(inStr.charAt(i));
-			}
-			i = i + 1
-		}
-		return retStr.toString();
+	def escape(inStr: String, changeSpace: Boolean): String = {
+		val s = inStr.map(c => c match {
+			case '&' => "&amp;"
+			case '<' => "&lt;"
+			case '>' => "&gt;"
+			case '\"' => "&quot;"
+			case ' ' if (changeSpace) => "&nbsp;"
+			case '\t' if (changeSpace) => "&nbsp;&nbsp;"
+			case _ => c
+		})
+		s.mkString
 	}
+
 }
