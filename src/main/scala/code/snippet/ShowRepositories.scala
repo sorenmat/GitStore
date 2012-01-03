@@ -31,8 +31,9 @@ import net.liftweb.widgets.sparklines.SparklineStyle
 import net.liftweb.http.js.JE.JsObj
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
+import net.liftweb.common.Logger
 
-class ShowRepositories extends Logging {
+class ShowRepositories extends Logger {
 
 	def render(template: NodeSeq): NodeSeq = {
 		val ss = ServerSetup.findAll.head

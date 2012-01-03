@@ -8,7 +8,6 @@ import scala.xml.Text
 import scala.xml.Text
 import org.eclipse.jgit.api._
 import org.eclipse.jgit.storage.file._
-import com.schantz.scala.Logging
 import code.helpers.WebSession
 import net.liftweb.http.SHtml._
 import net.liftweb.http.SHtml._
@@ -27,8 +26,9 @@ import net.liftweb.util._
 import net.liftweb.widgets.gravatar.Gravatar
 import net.liftweb._
 import code.helpers.RepositoryHelper
+import net.liftweb.common.Logger
 
-class ShowCommits extends Logging {
+class ShowCommits extends Logger {
 
 	def myrender(template: NodeSeq): NodeSeq = {
 		val repoName = WebSession.repository.get

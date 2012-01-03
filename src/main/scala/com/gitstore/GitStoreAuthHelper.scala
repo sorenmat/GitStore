@@ -51,6 +51,7 @@ object GitStoreAuthHelper extends Loggable {
 		repo match {
 			case Full(u) =>
 				if (u.users.find(repoUser => repoUser.username.toString == user.username.toString()).isEmpty) {
+					// is the repos groups all in the user group list
 					if (!u.groups.toSet.subsetOf(user.groups.toSet))
 						throw new ServiceNotAuthorizedException()
 				}
