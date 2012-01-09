@@ -7,7 +7,6 @@ import scala.xml.NodeSeq
 import scala.xml.Text
 import org.eclipse.jgit.api._
 import org.eclipse.jgit.storage.file._
-import com.schantz.scala.Logging
 import code.model._
 import net.liftweb.http.SHtml._
 import net.liftweb.http.S._
