@@ -3,3 +3,5 @@ libraryDependencies <+= sbtVersion(v => "com.github.siasia" %% "xsbt-web-plugin"
 resolvers += Classpaths.typesafeResolver
 
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse" % "1.4.0")
+
+//addSbtPlugin("de.johoop" % "cpd4sbt" % "1.1.0")

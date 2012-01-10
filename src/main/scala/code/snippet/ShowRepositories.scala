@@ -7,7 +7,6 @@ import scala.xml.NodeSeq
 import scala.xml.Text
 import org.eclipse.jgit.api._
 import org.eclipse.jgit.storage.file._
-import com.schantz.scala.Logging
 import code.model._
 import net.liftweb.http.SHtml._
 import net.liftweb.http.S._
@@ -32,39 +31,46 @@ import net.liftweb.http.js.JE.JsObj
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import net.liftweb.common.Logger
+import com.mongodb.BasicDBObject
 
 class ShowRepositories extends Logger {
 
+	def getRepositoriesFromFileSystem = {
+		val ss = ServerSetup.findAll.head
+		val dir = new File(ss.basepath.get)
+		if (dir.exists())
+			dir.listFiles()
+		else
+			Array[File]()
+	}
+
 	def render(template: NodeSeq): NodeSeq = {
 		val ss = ServerSetup.findAll.head
-		info(ss.toString)
-		val files = new File(ss.basepath).listFiles()
-		println("Files: " + files.mkString)
+		val files = getRepositoriesFromFileSystem
 		val repos = (files.filter(f => f.isDirectory())).filter(f => (new File(f, ".git").exists()))
 
-		val userGroups = WebSession.loggedInUser.openOr(User).groups
+		//		val userGroups = WebSession.loggedInUser.openOr(User).groups
 
 		val accessibleRepos = repos.filter(r => {
-			val repo = Repository.find(By(Repository.name, r.getName))
+			val repo = Repository.find(new BasicDBObject(Repository.name.toString(), r.getName))
 			println("Found repository in database: " + repo)
-			val showRepo = repo match {
-				case Full(x) => {
-					println("Repository groups: " + x.groups.mkString)
-					x.groups.isEmpty || userGroups.containsAll(x.groups)
-				}
-				case Empty => true
-				case Failure(_, _, _) => false
-			}
-			showRepo || WebSession.loggedInUser.openOr(User).isAdmin
+			val showRepo = true
+			//			= repo match {
+			//				case Full(x) => {
+			//					println("Repository groups: " + x.groups.mkString)
+			//					x.groups.isEmpty || userGroups.containsAll(x.groups)
+			//				}
+			//				case Empty => true
+			//				case Failure(_, _, _) => false
+			//			}
+			showRepo || WebSession.loggedInUser.openOr(User).isAdmin.get
 		})
 		accessibleRepos.flatMap(c => {
-			println("c -> " + c)
-
+			val start = System.currentTimeMillis()
 			val dataSet = {
 				val opts = JsObj("background" -> "rgba(255,255,255,1)",
-						"barColor" -> "red",
-						"bar_color" -> "red"
-						)
+					"barColor" -> "red",
+					"bar_color" -> "red")
 				//					("fill_between_percentage_lines" -> true),
 				//					("extend_markings" -> false))
 				//				this.background = "rgba(255,255,255,1);";
@@ -83,7 +89,6 @@ class ShowRepositories extends Logger {
 					}
 					val git = new Git(repo)
 
-					git.log.call().foreach(e => println(e.getAuthorIdent().getEmailAddress()))
 					val days = (0 until 30).toList.map(i => new LocalDate().minusDays(i) -> 0)
 					val commitsPrDay = git.log.call().groupBy(r => new LocalDate(r.getCommitterIdent().getWhen()))
 					val combinedMap = (days ++ commitsPrDay.map(e => e._1 -> e._2.size))
@@ -101,6 +106,8 @@ class ShowRepositories extends Logger {
 					case e: Throwable => e.printStackTrace(); (JsArray(), opts)
 				}
 			}
+			val stop = System.currentTimeMillis()
+			println("Generating stats for " + accessibleRepos.size + " took " + (stop - start) + " ms.")
 			var xml = bind("log", template,
 				"reponame" -> link("/showrepository?repo=" + c.getName(), () => {}, Text(c.getName)),
 				"graph" -%> <canvas id={ c.getName } style="width:140px;height:40px;"></canvas>)

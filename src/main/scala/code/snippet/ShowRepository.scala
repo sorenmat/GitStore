@@ -31,7 +31,7 @@ class ShowRepository extends Logger {
 
 	def render(template: NodeSeq): NodeSeq = {
 		val repoName = S.param("repo").get
-		val repodir = ServerSetup.findAll.head.basepath
+		val repodir = ServerSetup.findAll.head.basepath.get
 		WebSession.repository(repoName) // Set repository name on the session
 
 		println("Folder = " + folder)

@@ -6,5 +6,5 @@ import net.liftweb.sitemap.SiteMap
 import code.model.ServerSetup
 
 class ServerName {
-	def name(in: NodeSeq): NodeSeq = Text(ServerSetup.findAll.head.name)
+	def name(in: NodeSeq): NodeSeq = Text(ServerSetup.findAll.head.name.get)
 }

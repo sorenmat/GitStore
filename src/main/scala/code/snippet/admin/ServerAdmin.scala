@@ -32,7 +32,7 @@ class ServerAdmin {
 				"repositoryname" -> servetsetup.name.toForm,
 
 				"ldap_enabled" -> servetsetup.ldap_enabled.toForm,
-				"ldap_url" -> servetsetup.ldap_bind_url.toForm,
+				"ldap_hostname" -> servetsetup.hostname.toForm,
 
 				"ldap_base" -> servetsetup.ldap_bind_base.toForm,
 				"ldap_dn" -> servetsetup.ldap_bind_dn.toForm,

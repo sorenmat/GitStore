@@ -1,9 +1,7 @@
 package code.snippet.simple
 import scala.xml.NodeSeq
 import scala.xml.Text
-
 import com.gitstore.auth.LDAPUtil
-
 import code.helpers.WebSession
 import code.model.ServerSetup
 import code.model.User
@@ -17,6 +15,8 @@ import net.liftweb.http.SHtml.text
 import net.liftweb.mapper.By
 import net.liftweb.util.Helpers.bind
 import net.liftweb.util.Helpers.strToSuperArrowAssoc
+import com.mongodb.BasicDBObject
+import net.liftweb.common.Failure
 
 class Login {
 	def render(in: NodeSeq): NodeSeq = {
@@ -42,17 +42,19 @@ class Login {
 					}
 				}))
 
+			case Failure(_, _, _) => NodeSeq.Empty
+
 		}
 	}
 	def getUser(username: String, passwd: String) = {
 		println("is ldap enabled " + ServerSetup.instance.ldap_enabled.get)
 		if (ServerSetup.instance.ldap_enabled.get) {
-			val authenticated = LDAPUtil.search(username, passwd, Nil)
+			val authenticated = LDAPUtil.authenticate(username, passwd)
 			println("User '" + username + "' was authenticated")
-			val users = User.findAll(By(User.username, username))
+			val users = User.findAll(new BasicDBObject(User.username.toString(), username))
 			users.head.password(passwd).save // password should not be in plain text
 			users
 		} else
-			User.findAll(By(User.username, username), By(User.password, passwd))
+			List[User]()
 	}
 }

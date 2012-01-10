@@ -2,9 +2,10 @@ import sbt._
 import Keys._
 import com.github.siasia.WebPlugin._
 import com.github.siasia.PluginKeys._
+//import de.johoop.cpd4sbt.CopyPasteDetector._
 
 object MyBuild extends Build {
-	lazy val root = Project("TMC", file("."), settings = Defaults.defaultSettings ++ com.github.siasia.WebPlugin.webSettings ++ rootSettings)
+	lazy val root = Project("TMC", file("."), settings = Defaults.defaultSettings ++ com.github.siasia.WebPlugin.webSettings ++ rootSettings /*++ cpdSettings*/)
 
 	lazy val rootSettings = Seq(
 		port := 7070,
@@ -25,7 +26,9 @@ object MyBuild extends Build {
 			"net.liftweb" %% "lift-json" % liftVersion % "compile->default" withSources (),
 			//"net.liftweb" % "lift-json" % "2.0" withSources (),
 
-			"org.scalatest" % "scalatest_2.8.1" % "1.5",
+			"org.scalatest" %% "scalatest" % "1.6.1" % "test",
+			"junit" % "junit" % "4.10" % "test",
+			
 			"commons-io" % "commons-io" % "2.0.1",
 			"commons-lang" % "commons-lang" % "2.6",
 
