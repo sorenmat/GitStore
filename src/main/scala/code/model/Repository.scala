@@ -1,15 +1,19 @@
 package code.model
 import net.liftweb.mapper._
+import net.liftweb.mongodb.record.MongoRecord
+import net.liftweb.mongodb.record.MongoMetaRecord
+import net.liftweb.mongodb.record.field.ObjectIdPk
+import net.liftweb.record.field.StringField
+import net.liftweb.mongodb.record.field.MongoJsonObjectListField
+import net.liftweb.mongodb.record.field.MongoListField
 
-class Repository extends LongKeyedMapper[Repository] with IdPK with ManyToMany {
-	def getSingleton = Repository
+class Repository private() extends MongoRecord[Repository] with ObjectIdPk[Repository] {
+  def meta = Repository
 
-	object name extends MappedString(this, 100)
-	object path extends MappedString(this, 100)
-
-	object groups extends MappedManyToMany(Repository_Group, Repository_Group.repository , Repository_Group.group, Group)
-	object users extends MappedManyToMany(Repository_User, Repository_User.repository , Repository_User.user, User)
+  object name extends StringField(this, 100)
+  object path extends StringField(this, 100)
+  object groups extends MongoListField[Repository, String](this)
+  
 }
 
-object Repository extends Repository with LongKeyedMetaMapper[Repository] {}
-
+object Repository extends Repository with MongoMetaRecord[Repository]

@@ -1,12 +1,9 @@
 package bootstrap.liftweb
 
 import code.helpers.DatabaseHelper
-import code.model.Group
 import code.model.Repository
-import code.model.Repository_Group
 import code.model.ServerSetup
 import code.model.User
-import code.model.UserGroups
 import net.liftweb.common.Full
 import net.liftweb.db.DB1.db1ToDb
 import net.liftweb.http.LiftRulesMocker.toLiftRules
@@ -34,7 +31,11 @@ import net.liftweb.widgets.autocomplete.AutoComplete
 import net.liftweb.widgets.flot._
 import net.liftweb.widgets.sparklines.Sparklines
 import net.liftweb.http.ParsePath
-import code.model.Repository_User
+import net.liftweb.mongodb.MongoDB
+import net.liftweb.mongodb.DefaultMongoIdentifier
+import com.mongodb.Mongo
+import code.helpers.LDAPHelper
+import com.gitstore.auth.LDAPUtil
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -57,23 +58,12 @@ class Boot {
 			Flot.init
 			Sparklines.init
 
-			if (!DB.jndiJdbcConnAvailable_?) {
-				val vendor =
-					new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
-						Props.get("db.url") openOr
-							"jdbc:h2:~/GitStore.db;AUTO_SERVER=TRUE",
-						Props.get("db.user"), Props.get("db.password"))
-
-				LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
-
-				DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
-			}
-			Schemifier.schemify(true, Schemifier.infoF _, User, Group, Repository, UserGroups, Repository_Group, Repository_User, ServerSetup)
+			MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, "GitStore")
 			//val loggedIn = If(() => !loggedIn_?, () => RedirectResponse("/tmc/tmc"))
 
 			val serverSetup = ServerSetup.findAll
 			if (serverSetup.isEmpty) {
-				ServerSetup.create.name("Default GitStore server").basepath("/tmp/repos").save
+				ServerSetup.createRecord.name("Default GitStore server").basepath("/tmp/repos").save
 			}
 
 			def siteMap() = SiteMap(Menu(S ? "Commits") / "showcommits" >> Hidden,
@@ -111,7 +101,9 @@ class Boot {
 
 			DatabaseHelper.init
 
-		} catch {
+			println("Groups = "+LDAPUtil.getGroups)
+//			LDAPUtil.authenticateUser("soren", "")
+			} catch {
 			case e: Throwable => e.printStackTrace
 		}
 	}
