@@ -1,48 +1,42 @@
 package com.gitstore.auth
 import java.util.Hashtable
-import java.util.logging.Level
-import java.util.logging.Logger
-import javax.naming.Context
-import javax.naming.NamingEnumeration
-import javax.naming.directory.Attribute
-import javax.naming.directory.Attributes
-import javax.naming.directory.BasicAttributes
-import javax.naming.directory.DirContext
+
+import scala.collection.JavaConversions.enumerationAsScalaIterator
+
+import com.sun.jndi.ldap.LdapCtxFactory
+
+import code.model.ServerSetup
+import javax.naming.directory.SearchControls.SUBTREE_SCOPE
 import javax.naming.directory.InitialDirContext
 import javax.naming.directory.SearchControls
 import javax.naming.directory.SearchResult
-import code.model.ServerSetup
-import collection.JavaConversions._
+import javax.naming.Context
+import scala.collection.JavaConversions._
 
 object LDAPUtil {
 
-	val url = ServerSetup.instance.ldap_bind_url.toString()
+	val hostname = ServerSetup.instance.hostname.get
 	val base = ServerSetup.instance.ldap_bind_base.toString()
 
 	val dn = ServerSetup.instance.ldap_bind_dn.toString()
 	val ldap_bind_pw = ServerSetup.instance.ldap_bind_pw.toString()
 	val ldap_user_searchString = ServerSetup.instance.ldap_user_searchString.toString()
 
-	def search(username: String, password: String, projectName: List[String]) = {
-		connecetAndBind(username, password, projectName)
-	}
-
 	def getGroups: List[String] = {
-		val query = "(objectclass=group)"
+		val query = ServerSetup.instance.ldap_group_searchString.get
 		try {
 			val env = new Hashtable[String, String]()
 
 			env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
-			env.put(Context.PROVIDER_URL, url)
+			println("base = "+base)
+			env.put(Context.PROVIDER_URL, url + base )
 
 			env.put(Context.SECURITY_AUTHENTICATION, "simple")
 			env.put(Context.SECURITY_PRINCIPAL, dn)
 			env.put(Context.SECURITY_CREDENTIALS, ldap_bind_pw)
 			val context = new InitialDirContext(env)
-
 			val ctrl = new SearchControls()
 			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE)
-			println("Connect and bind query: " + query)
 			val enumeration = context.search("", query, ctrl)
 			val groups = enumeration.map(e => {
 				val attribs = e.asInstanceOf[SearchResult].getAttributes()
@@ -71,12 +65,9 @@ object LDAPUtil {
 
 			val ctrl = new SearchControls()
 			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE)
-			println("Connect and bind query: " + query)
 			val enumeration = context.search("", query, ctrl)
 			val groups = enumeration.map(e => {
 				val attribs = e.asInstanceOf[SearchResult].getAttributes()
-//				println("Username -> " + attribs)
-				println("****************")
 				attribs.get("samaccountname").get().toString()
 
 			})
@@ -87,109 +78,89 @@ object LDAPUtil {
 		return Nil
 	}
 
-	/**
-	 * Connect to the ldap server as the bind user, and search for the user in the attribute sAMAccountName
-	 * If found call the searchUser method with the distinguishedName of the user
-	 * @param username
-	 * @param projectName
-	 * @param password
-	 * @return
-	 */
-	def connecetAndBind(username: String, password: String, projectName: List[String]): Boolean = {
-		val query = "(sAMAccountName=" + username + ")"
-		try {
-			val env = new Hashtable[String, String]()
+	def getGroups(username: String): List[String] = {
+		val domainName = hostname.substring(hostname.indexOf(".") + 1, hostname.length())
+		val serverName = hostname.substring(0, hostname.indexOf("."))
 
-			env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
-			env.put(Context.PROVIDER_URL, url)
+		System.out.println("Authenticating " + username + "@" + domainName + " through " + serverName + "." + domainName);
 
-			env.put(Context.SECURITY_AUTHENTICATION, "simple")
-			env.put(Context.SECURITY_PRINCIPAL, dn)
-			env.put(Context.SECURITY_CREDENTIALS, ldap_bind_pw)
-			val context = new InitialDirContext(env)
+		// bind by using the specified username/password
+		val props = new Hashtable[String, String]()
+		val principalName = username + "@" + domainName;
+		props.put(Context.SECURITY_PRINCIPAL, dn)
+		props.put(Context.SECURITY_CREDENTIALS, ldap_bind_pw);
 
-			val ctrl = new SearchControls()
-			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE)
-			println("Connect and bind query: " + query)
-			val enumeration = context.search("", query, ctrl)
-			while (enumeration.hasMore()) {
-				val result = enumeration.next().asInstanceOf[SearchResult]
-				val attribs = result.getAttributes()
-				val bas = attribs.asInstanceOf[BasicAttributes]
-				val all = bas.getAll()
-				val memberof = bas.get("distinguishedName")
-				return searchUser(memberof.toString(), password, projectName)
-			}
-		} catch {
-			case e: Exception => e.printStackTrace()
+		val context = LdapCtxFactory.getLdapCtxInstance(url, props);
+		System.out.println("Authentication succeeded!");
+
+		// locate this user's record
+		val controls = new SearchControls();
+		controls.setSearchScope(SUBTREE_SCOPE);
+		val renum = context.search(toDC(domainName), "(& (userPrincipalName=" + principalName + "))", controls);
+		if (!renum.hasMore()) {
+			System.out.println("Cannot locate user information for " + username);
+			Nil
+		} else {
+			val groups = renum.flatMap(f => {
+				val memberof = f.getAttributes().get("memberof").getAll
+				val groups = memberof.map(f => {
+
+					val group = f.toString()
+					val gruopName = group.substring(0, group.indexOf(",")).replace("CN=", "")
+					gruopName
+
+				})
+				groups
+			})
+			return groups.toList
 		}
-		return false
+
 	}
 
-	/**
-	 * Searches for distinguishedName found by the bind user, and checks if the user has the project name in the
-	 * memberof attribute
-	 *
-	 * @param projectName
-	 * @param dn
-	 * @param password
-	 * @return
-	 */
-	def searchUser(origdn: String, password: String, projectName: List[String]): Boolean = {
-		try {
-			val dn = origdn.replaceAll("distinguishedName: ", "")
-			val query = "(distinguishedName=" + dn + ")"
-			println("Query: " + query)
-			val env = new Hashtable[String, String]()
-
-			env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
-			env.put(Context.PROVIDER_URL, url)
-
-			env.put(Context.SECURITY_AUTHENTICATION, "simple")
-			env.put(Context.SECURITY_PRINCIPAL, dn)
-			env.put(Context.SECURITY_CREDENTIALS, password)
-			val context = new InitialDirContext(env)
-
-			val ctrl = new SearchControls()
-			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE)
-
-			val enumeration = context.search("", query, ctrl)
-			while (enumeration.hasMore()) {
-				val result = enumeration.next().asInstanceOf[SearchResult]
-				val attribs = result.getAttributes()
-				val bas = attribs.asInstanceOf[BasicAttributes]
-
-				val memberof = bas.get("memberof")
-				memberof.getAll().foreach(grp => println("grp: " + grp))
-
-				for (project <- projectName) {
-					println("project: " + project)
-					if (memberof.toString().contains("CN=" + project)) {
-						return true
-					}
-				}
-			}
-
-			val enumeration1 = context.search("", base, ctrl)
-			while (enumeration1.hasMore()) {
-				val result = enumeration1.next().asInstanceOf[SearchResult]
-				val attribs = result.getAttributes()
-				val bas = attribs.asInstanceOf[BasicAttributes]
-
-				val memberof = bas.get("memberof")
-				memberof.getAll().foreach(grp => println("Groups: " + grp))
-
-				for (project <- projectName) {
-					println("project ->: " + project)
-					if (memberof.toString().contains("CN=" + project)) {
-						return true
-					}
-				}
-			}
-		} catch {
-			case e: Exception => e.printStackTrace()
-		}
-		return false
+	def url = {
+		println("hostname == " + hostname)
+		val domainName = hostname.substring(hostname.indexOf(".") + 1, hostname.length())
+		val serverName = hostname.substring(0, hostname.indexOf("."))
+		"ldap://" + serverName + "." + domainName + '/'
 	}
 
+	def authenticate(username: String, password: String): Boolean = {
+		val domainName = hostname.substring(hostname.indexOf(".") + 1, hostname.length())
+		val serverName = hostname.substring(0, hostname.indexOf("."))
+
+		System.out.println("Authenticating " + username + "@" + domainName + " through " + serverName + "." + domainName);
+
+		// bind by using the specified username/password
+		val props = new Hashtable[String, String]()
+		val principalName = username + "@" + domainName;
+		props.put(Context.SECURITY_PRINCIPAL, principalName);
+		props.put(Context.SECURITY_CREDENTIALS, password);
+
+		val context = LdapCtxFactory.getLdapCtxInstance(url, props);
+		System.out.println("Authentication succeeded!");
+
+		// locate this user's record
+		val controls = new SearchControls();
+		controls.setSearchScope(SUBTREE_SCOPE);
+		val renum = context.search(toDC(domainName), "(& (userPrincipalName=" + principalName + ")(objectClass=user))", controls);
+		if (!renum.hasMore()) {
+			System.out.println("Cannot locate user information for " + username);
+			false
+		} else {
+			true
+		}
+
+	}
+
+	def toDC(domainName: String) = {
+		val buf = new StringBuilder();
+		for (token <- domainName.split("\\.")) {
+			if (token.length() != 0) {
+				if (buf.length() > 0) buf.append(",");
+				buf.append("DC=").append(token);
+
+			}
+		}
+		buf.toString();
+	}
 }
