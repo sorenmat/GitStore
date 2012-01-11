@@ -15,7 +15,10 @@ import scala.collection.JavaConversions._
 
 object LDAPUtil {
 
-	val hostname = ServerSetup.instance.hostname.get
+	val hostname = if ("" != ServerSetup.instance.hostname.get)
+		ServerSetup.instance.hostname.get
+	else
+		"localhost.localdomain"
 	val base = ServerSetup.instance.ldap_bind_base.toString()
 
 	val dn = ServerSetup.instance.ldap_bind_dn.toString()
@@ -28,8 +31,8 @@ object LDAPUtil {
 			val env = new Hashtable[String, String]()
 
 			env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
-			println("base = "+base)
-			env.put(Context.PROVIDER_URL, url + base )
+			println("base = " + base)
+			env.put(Context.PROVIDER_URL, url + base)
 
 			env.put(Context.SECURITY_AUTHENTICATION, "simple")
 			env.put(Context.SECURITY_PRINCIPAL, dn)

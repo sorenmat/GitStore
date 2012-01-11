@@ -5,7 +5,7 @@ import com.github.siasia.PluginKeys._
 //import de.johoop.cpd4sbt.CopyPasteDetector._
 
 object MyBuild extends Build {
-	lazy val root = Project("TMC", file("."), settings = Defaults.defaultSettings ++ com.github.siasia.WebPlugin.webSettings ++ rootSettings /*++ cpdSettings*/)
+	lazy val root = Project("GitStore", file("."), settings = Defaults.defaultSettings ++ com.github.siasia.WebPlugin.webSettings ++ rootSettings /*++ cpdSettings*/)
 
 	lazy val rootSettings = Seq(
 		port := 7070,
