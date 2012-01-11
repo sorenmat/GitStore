@@ -71,6 +71,7 @@ class Boot {
 				Menu(S ? "Show Repositories") / "index",
 				Menu(S ? "Show Repository") / "showrepository" >> Hidden,
 				Menu(S ? "Repository settings") / "repositorysettings" >> Hidden,
+				Menu(S ? "Repository wiki") / "repositorywiki" >> Hidden,
 				Menu(S ? "Server admin") / "admin/serveradmin")
 
 			LiftRules.setSiteMap(siteMap())

@@ -34,8 +34,11 @@ object MyBuild extends Build {
 
 			"org.eclipse.jetty" % "jetty-webapp" % "8.0.1.v20110908" % "container",
 			"javax.servlet" % "servlet-api" % "2.5" % "provided",
+			
+			
+			"org.markdownj" % "markdownj" % "0.3.0-1.0.2b4",
+			
 			"org.eclipse.jgit" % "org.eclipse.jgit" % jgitVersion,
-
 			"org.eclipse.jgit" % "org.eclipse.jgit.http.server" % jgitVersion)
 
 }

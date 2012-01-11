@@ -30,14 +30,15 @@
   <classpathentry path="/Users/soren/.ivy2/cache/net.liftweb/lift-mongodb_2.9.1/jars/lift-mongodb_2.9.1-2.4-RC1.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/soren/.ivy2/cache/org.mongodb/mongo-java-driver/jars/mongo-java-driver-2.6.5.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/soren/.ivy2/cache/net.liftweb/lift-json-ext_2.9.1/jars/lift-json-ext_2.9.1-2.4-RC1.jar" kind="lib"></classpathentry>
-  <classpathentry path="/Users/soren/.ivy2/cache/junit/junit/jars/junit-4.10.jar" kind="lib"></classpathentry>
-  <classpathentry path="/Users/soren/.ivy2/cache/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.1.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/soren/.ivy2/cache/commons-io/commons-io/jars/commons-io-2.0.1.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/soren/.ivy2/cache/commons-lang/commons-lang/jars/commons-lang-2.6.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/soren/.ivy2/cache/org.markdownj/markdownj/jars/markdownj-0.3.0-1.0.2b4.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/soren/.ivy2/cache/org.eclipse.jgit/org.eclipse.jgit/jars/org.eclipse.jgit-1.2.0.201112221803-r.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/soren/.ivy2/cache/com.jcraft/jsch/jars/jsch-0.1.44-1.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/soren/.ivy2/cache/org.eclipse.jgit/org.eclipse.jgit.http.server/jars/org.eclipse.jgit.http.server-1.2.0.201112221803-r.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/soren/.ivy2/cache/org.scalatest/scalatest_2.9.1/jars/scalatest_2.9.1-1.6.1.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/soren/.ivy2/cache/junit/junit/jars/junit-4.10.jar" kind="lib"></classpathentry>
+  <classpathentry path="/Users/soren/.ivy2/cache/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.1.jar" kind="lib"></classpathentry>
   <classpathentry path="/Users/soren/.ivy2/cache/javax.servlet/servlet-api/jars/servlet-api-2.5.jar" kind="lib"></classpathentry>
   <classpathentry path="org.scala-ide.sdt.launching.SCALA_CONTAINER" kind="con"></classpathentry>
   <classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6" kind="con"></classpathentry>
