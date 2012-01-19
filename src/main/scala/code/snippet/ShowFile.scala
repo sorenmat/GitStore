@@ -59,13 +59,4 @@ class ShowFile extends Logger {
 		html
 
 	}
-	def clickableImage(url: String, image: String, title: String): NodeSeq = {
-		<a href={ url } title={ title }><img src={ image } height="16" width="16"/></a>
-	}
-
-	def breadcrumb: NodeSeq = {
-		val paths = folder.get.split("/")
-		val html = paths.map(path => <li>{ link(S.uri + "?repo=" + WebSession.repository.get, () => folder(path), Text(path)) }<span class="divider">/</span></li>)
-		html.toSeq
-	}
 }
