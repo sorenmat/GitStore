@@ -14,16 +14,13 @@ import net.liftweb.http.S
 import net.liftweb.util.Helpers.bind
 import net.liftweb.util.Helpers.strToSuperArrowAssoc
 import net.liftweb.widgets.autocomplete.AutoComplete
-class RepositorySettings {
+class RepositorySettings extends RepositoryContextPage  {
 
-	def render(form: NodeSeq) = {
+	def content(form: NodeSeq) = {
 		var userSelectedGroups: List[String] = Nil
-		val repoName = WebSession.repository.get
-		if (repoName == "")
-			S.redirectTo("/")
 
-		val repo = Repository.find(new BasicDBObject("name", repoName)).getOrElse({
-			val newRepo = Repository.createRecord.name(repoName)
+		val repo = Repository.find(new BasicDBObject("name", repositoryname)).getOrElse({
+			val newRepo = Repository.createRecord.name(repositoryname)
 			newRepo
 		})
 

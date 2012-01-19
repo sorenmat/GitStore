@@ -19,13 +19,9 @@ import scala.xml.Text
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.SHtml.ElemAttr
 import scala.xml.XML
-class RepositoryWiki {
+class RepositoryWiki extends RepositoryContextPage {
 
-	def render(form: NodeSeq) = {
-		val repoName = WebSession.repository.get
-		if (repoName == "")
-			S.redirectTo("/")
-
+	def content(form: NodeSeq) = {
 		var text = ""
 
 		def preview(): JsCmd = {

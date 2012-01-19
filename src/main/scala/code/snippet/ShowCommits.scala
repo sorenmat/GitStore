@@ -28,9 +28,9 @@ import net.liftweb._
 import code.helpers.RepositoryHelper
 import net.liftweb.common.Logger
 
-class ShowCommits extends Logger {
+class ShowCommits extends Logger with RepositoryContextPage {
 
-	def myrender(template: NodeSeq): NodeSeq = {
+	def content(template: NodeSeq): NodeSeq = {
 		val repoName = WebSession.repository.get
 		val builder = new FileRepositoryBuilder()
 		val repository = builder.setGitDir(RepositoryHelper.currentRepository)

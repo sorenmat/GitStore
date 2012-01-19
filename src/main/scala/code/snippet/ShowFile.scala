@@ -25,11 +25,11 @@ import net.liftweb.util.Helpers.bind
 import net.liftweb.util.Helpers.strToSuperArrowAssoc
 import org.gitective.core.BlobUtils
 
-class ShowFile extends Logger {
+class ShowFile extends Logger with RepositoryContextPage {
 
 	object folder extends RequestVar[String]("")
 
-	def render(template: NodeSeq): NodeSeq = {
+	def content(template: NodeSeq): NodeSeq = {
 		val file = S.param("file").get
 		val repoName = WebSession.repository.get
 		if (repoName == "")
