@@ -32,6 +32,7 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import net.liftweb.common.Logger
 import com.mongodb.BasicDBObject
+import com.gitstore.auth.AuthHelper
 
 class ShowRepositories extends Logger {
 
@@ -54,16 +55,14 @@ class ShowRepositories extends Logger {
 		val accessibleRepos = repos.filter(r => {
 			val repo = Repository.find(new BasicDBObject(Repository.name.toString(), r.getName))
 			println("Found repository in database: " + repo)
-			val showRepo = true
-			//			= repo match {
-			//				case Full(x) => {
-			//					println("Repository groups: " + x.groups.mkString)
-			//					x.groups.isEmpty || userGroups.containsAll(x.groups)
-			//				}
-			//				case Empty => true
-			//				case Failure(_, _, _) => false
-			//			}
-			showRepo || WebSession.loggedInUser.openOr(User).isAdmin.get
+			val showRepo = repo match {
+							case Full(x) => {
+								AuthHelper.hasUserAccess(WebSession.loggedInUser.openOr(User).username.get, x.name.get)
+							}
+							case Empty => true
+							case Failure(_, _, _) => false
+						}
+			showRepo || WebSession.loggedInUser.openOr(User).isAdmin.get || ss.public.get
 		})
 		accessibleRepos.flatMap(c => {
 			val start = System.currentTimeMillis()

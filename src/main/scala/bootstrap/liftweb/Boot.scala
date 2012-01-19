@@ -70,6 +70,7 @@ class Boot {
 				Menu(S ? "Show revision") / "showrev" >> Hidden,
 				Menu(S ? "Show Repositories") / "index",
 				Menu(S ? "Show Repository") / "showrepository" >> Hidden,
+				Menu(S ? "Show File") / "showfile" >> Hidden,
 				Menu(S ? "Repository settings") / "repositorysettings" >> Hidden,
 				Menu(S ? "Repository wiki") / "repositorywiki" >> Hidden,
 				Menu(S ? "Server admin") / "admin/serveradmin")
@@ -102,8 +103,6 @@ class Boot {
 
 			DatabaseHelper.init
 
-			println("Groups = "+LDAPUtil.getGroups)
-//			LDAPUtil.authenticateUser("soren", "")
 			} catch {
 			case e: Throwable => e.printStackTrace
 		}

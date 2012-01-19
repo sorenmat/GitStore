@@ -14,7 +14,9 @@
   
     <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/>
     <script id="json" src="/classpath/json.js" type="text/javascript"/>
-   
+   <link href="scripts/pretty/prettify.css" type="text/css" rel="stylesheet" />
+	<script type="text/javascript" src="scripts/pretty/prettify.js"></script>
+
     <!-- Le styles -->
     <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css"/>
     
@@ -81,7 +83,7 @@
     
   </head>
 
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="topbar">
       <div class="fill">

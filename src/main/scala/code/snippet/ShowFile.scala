@@ -1,19 +1,18 @@
 package code.snippet
 
 import java.io.File
-
 import scala.Array.canBuildFrom
+import scala.io.Source
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.NodeSeq
 import scala.xml.Text
-
-import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Constants
+import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.revwalk.RevWalk
+import org.eclipse.jgit.storage.file.FileRepository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.treewalk.filter.PathFilter
 import org.eclipse.jgit.treewalk.TreeWalk
-
-import code.helpers.git.GitFileHelper
 import code.helpers.WebSession
 import code.model.ServerSetup
 import net.liftweb.common.Box.box2Option
@@ -24,55 +23,39 @@ import net.liftweb.http.S
 import net.liftweb.mapper.MappedField.mapToType
 import net.liftweb.util.Helpers.bind
 import net.liftweb.util.Helpers.strToSuperArrowAssoc
+import org.gitective.core.BlobUtils
 
-class ShowRepository extends Logger {
+class ShowFile extends Logger {
 
 	object folder extends RequestVar[String]("")
 
 	def render(template: NodeSeq): NodeSeq = {
-		val repoName = S.param("repo").get
+		val file = S.param("file").get
+		val repoName = WebSession.repository.get
+		if (repoName == "")
+			S.redirectTo("/")
+
 		val repodir = ServerSetup.findAll.head.basepath.get
 		WebSession.repository(repoName) // Set repository name on the session
 
-		val builder = new FileRepositoryBuilder();
+		val builder = new FileRepositoryBuilder()
 		val repoFile = new File(repodir, repoName + "/.git")
 		println("Repo file: " + repoFile + " " + repoFile.exists())
-		val repo = (builder.setGitDir(repoFile)
+
+		val repository = (builder.setGitDir(repoFile)
 			.readEnvironment() // scan environment GIT_* variables
 			.findGitDir()).build();
 
-		val git = new Git(repo)
-		val lastCommitId = repo.resolve(Constants.HEAD)
-		// retrieve the tree in HEAD
-		val revWalk = new RevWalk(repo);
-		val commit = revWalk.parseCommit(lastCommitId);
-
-		// and using commit's tree find the path
-		val tree = commit.getTree();
-
-		val treeWalk = new TreeWalk(repo)
-		treeWalk.addTree(tree);
-		var run = true
-
-		val fileItems = GitFileHelper.getFilesInPath(repo, folder.get, commit)
-
-		val html = fileItems.sortWith((item, item1) => item.isDirectory > item1.isDirectory).map(item =>
-			bind("filetree", template,
-				"icon" -> {
-					if (item.isDirectory) clickableImage("", "images/dir.png", "") else clickableImage("", "images/txt.png", "")
-				},
-				"filename" -> {
-					if (item.isDirectory) {
-						link(S.uri + "?repo=" + repoName, () => {
-							folder(item.path)
-						}, Text(item.name))
-					} else {
-						link("/showfile?file="+item.path, () => {
-							folder(item.path)
-						}, Text(item.name))
-					}
-				})).flatMap(f => f)
-		repo.close()
+		
+		val repo = new FileRepository(repoFile);
+		val content = "\n"+BlobUtils.getHeadContent(repo, file);
+		val html = bind("showfile", template,
+			"filecontent" -> {
+				<pre class="prettyprint">
+				{content.split("\n").map(l => Text(l)++ <br/>).foldLeft(NodeSeq.Empty)((a,b) => a ++ b)}
+				</pre>
+			})
+		repository.close()
 		html
 
 	}

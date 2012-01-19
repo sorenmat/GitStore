@@ -30,6 +30,7 @@ class ServerAdmin {
 			bind("serveradmin", form,
 				"basepath" -> servetsetup.basepath.toForm,
 				"repositoryname" -> servetsetup.name.toForm,
+				"public" -> servetsetup.public.toForm,
 
 				"ldap_enabled" -> servetsetup.ldap_enabled.toForm,
 				"ldap_hostname" -> servetsetup.hostname.toForm,

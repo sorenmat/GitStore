@@ -37,6 +37,7 @@ object MyBuild extends Build {
 			
 			
 			"org.markdownj" % "markdownj" % "0.3.0-1.0.2b4",
+			"org.gitective" % "gitective-core" % "0.9.4",
 			
 			"org.eclipse.jgit" % "org.eclipse.jgit" % jgitVersion,
 			"org.eclipse.jgit" % "org.eclipse.jgit.http.server" % jgitVersion)

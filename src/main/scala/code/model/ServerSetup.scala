@@ -11,7 +11,8 @@ class ServerSetup extends MongoRecord[ServerSetup] with ObjectIdPk[ServerSetup] 
 
 	object name extends StringField(this, 100)
 	object basepath extends StringField(this, 100)
-
+	object public extends BooleanField(this)
+	
 	// ldap
 	object ldap_enabled extends BooleanField(this)
 	object hostname extends StringField(this, 100)

@@ -27,7 +27,8 @@ class RepositorySettings {
 			newRepo
 		})
 
-		val groups = LDAPUtil.getGroups
+		
+		val groups = GroupHelper.getGroupAuthProvider.groups
 
 		def checkAndSave(): Unit = {
 			repo.groups(userSelectedGroups)
