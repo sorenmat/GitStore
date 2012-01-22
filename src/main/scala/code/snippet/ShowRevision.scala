@@ -33,21 +33,21 @@ class ShowRevision extends Logger {
 
 		val sb = new StringBuilder()
 		sb.append(GitDiffHelper.getDiff(repo, null, commit, DiffOutputType.GITSTORE))
-		//		println("********* PATCH **************")
-		//		println(sb.toString())
-
-		println("currentRepo "+currentRepository.getAbsolutePath())
-		val myrepo = new FileRepository(currentRepository.getAbsolutePath())
-
-		
-		val current = BlobUtils.getId(repo, "HEAD", "build.sbt");
-		val previous = BlobUtils.getId(repo, "HEAD^4", "build.sbt");
-
-		info("current %s, previous".format(current, previous))
-		println("current %s, previous".format(current, previous))
-		val edit = BlobUtils.diff(repo, previous, current);
-		println("PATCH\n\n" + edit + "\n\nPATCH");
-		//		println("********* PATCH **************")
+//		//		println("********* PATCH **************")
+//		//		println(sb.toString())
+//
+//		println("currentRepo "+currentRepository.getAbsolutePath())
+//		val myrepo = new FileRepository(currentRepository.getAbsolutePath())
+//
+//		
+//		val current = BlobUtils.getId(repo, "HEAD", "build.sbt");
+//		val previous = BlobUtils.getId(repo, "HEAD^4", "build.sbt");
+//
+//		info("current %s, previous".format(current, previous))
+//		println("current %s, previous".format(current, previous))
+//		val edit = BlobUtils.diff(repo, previous, current);
+//		println("PATCH\n\n" + edit + "\n\nPATCH");
+//		//		println("********* PATCH **************")
 		Unparsed(sb.toString())
 
 	}
