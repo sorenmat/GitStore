@@ -1,12 +1,11 @@
 package code.snippet
 
 import java.io.File
-
 import scala.Array.canBuildFrom
 import scala.xml.NodeSeq.seqToNodeSeq
 import scala.xml.NodeSeq
 import scala.xml.Text
-
+import scala.collection.JavaConversions._
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.revwalk.RevWalk
@@ -56,7 +55,10 @@ class ShowRepository extends Logger {
 
 		val fileItems = GitFileHelper.getFilesInPath(repo, folder.get, commit)
 
-		val html = fileItems.sortWith((item, item1) => item.isDirectory > item1.isDirectory).map(item =>
+		val html = fileItems.sortWith((item, item1) => item.isDirectory > item1.isDirectory).map(item => {
+			val log = git.log().addPath(item.path)
+			val latestChange = log.call().head
+
 			bind("filetree", template,
 				"icon" -> {
 					if (item.isDirectory) clickableImage("", "images/dir.png", "") else clickableImage("", "images/txt.png", "")
@@ -67,14 +69,14 @@ class ShowRepository extends Logger {
 							folder(item.path)
 						}, Text(item.name))
 					} else {
-						link("/showfile?file="+item.path, () => {
+						link("/showfile?file=" + item.path, () => {
 							folder(item.path)
 						}, Text(item.name))
 					}
 				},
-				"committer" -> revWalk.parseCommit(repo.resolve(item.commitId)).getAuthorIdent().getName(),
-				"commitmsg" -> revWalk.parseCommit(repo.resolve(item.commitId)).getFullMessage().take(50)
-			)).flatMap(f => f)
+				"committer" -> latestChange.getAuthorIdent().getName(),
+				"commitmsg" -> latestChange.getFullMessage().take(50))
+		}).flatMap(f => f)
 		repo.close()
 		html
 

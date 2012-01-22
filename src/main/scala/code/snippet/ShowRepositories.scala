@@ -33,6 +33,10 @@ import org.joda.time.format.DateTimeFormat
 import net.liftweb.common.Logger
 import com.mongodb.BasicDBObject
 import com.gitstore.auth.AuthHelper
+import org.gitective.core.CommitFinder
+import org.gitective.core.stat.AuthorHistogramFilter
+import org.gitective.core.stat.CommitCalendar
+import org.gitective.core.stat.Month
 
 class ShowRepositories extends Logger {
 
@@ -56,12 +60,12 @@ class ShowRepositories extends Logger {
 			val repo = Repository.find(new BasicDBObject(Repository.name.toString(), r.getName))
 			println("Found repository in database: " + repo)
 			val showRepo = repo match {
-							case Full(x) => {
-								AuthHelper.hasUserAccess(WebSession.loggedInUser.openOr(User).username.get, x.name.get)
-							}
-							case Empty => true
-							case Failure(_, _, _) => false
-						}
+				case Full(x) => {
+					AuthHelper.hasUserAccess(WebSession.loggedInUser.openOr(User).username.get, x.name.get)
+				}
+				case Empty => true
+				case Failure(_, _, _) => false
+			}
 			showRepo || WebSession.loggedInUser.openOr(User).isAdmin.get || ss.public.get
 		})
 		accessibleRepos.flatMap(c => {
@@ -102,11 +106,14 @@ class ShowRepositories extends Logger {
 
 					(data1, opts)
 				} catch {
-					case e: Throwable => e.printStackTrace(); (JsArray(), opts)
+					case e: Throwable => {
+						e.printStackTrace()
+						(JsArray(), opts)
+					}
 				}
 			}
 			val stop = System.currentTimeMillis()
-			println("Generating stats for " + accessibleRepos.size + " took " + (stop - start) + " ms.")
+			println("Generating stats for " + c.getName + " took " + (stop - start) + " ms.")
 			var xml = bind("log", template,
 				"reponame" -> link("/showrepository?repo=" + c.getName(), () => {}, Text(c.getName)),
 				"graph" -%> <canvas id={ c.getName } style="width:140px;height:40px;"></canvas>)
