@@ -71,7 +71,10 @@ class ShowRepository extends Logger {
 							folder(item.path)
 						}, Text(item.name))
 					}
-				})).flatMap(f => f)
+				},
+				"committer" -> revWalk.parseCommit(repo.resolve(item.commitId)).getAuthorIdent().getName(),
+				"commitmsg" -> revWalk.parseCommit(repo.resolve(item.commitId)).getFullMessage().take(50)
+			)).flatMap(f => f)
 		repo.close()
 		html
 
