@@ -54,69 +54,43 @@ object LDAPUtil {
 	}
 
 	def getUsers: List[String] = {
-		val query = ldap_user_searchString
-		try {
-			val env = new Hashtable[String, String]()
+//		val query = ldap_user_searchString
+//		try {
+//			val env = new Hashtable[String, String]()
+//
+//			env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
+//			env.put(Context.PROVIDER_URL, url)
+//			env.put(Context.SECURITY_AUTHENTICATION, "simple")
+//			env.put(Context.SECURITY_PRINCIPAL, "CN=Git Server,OU=System,OU=Schantz,DC=schantz,DC=com")
+//			env.put(Context.SECURITY_CREDENTIALS, "85ukUtru")
+//			val context = new InitialDirContext(env)
+//			println("URL=" + url)
+//			//			ldap://dc.schantz.com:389/DC=schantz,DC=com??sub?(objectClass=user)
+//			val ctrl = new SearchControls()
+//			val query1 = "(objectClass=user)"
+//			println("query: " + query1)
+//			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE)
+//			val enumeration = context.search("", query1, ctrl)
+//			val groups = enumeration.map(e => {
+//				val attribs = e.asInstanceOf[SearchResult].getAttributes()
+//				attribs.get("samaccountname").get().toString()
+//
+//			})
+//			return groups.toList
+//		} catch {
+//			case e: Exception => e.printStackTrace()
+//		}
+//		return Nil
+		extractDataFromLDAP("(objectClass=user)", { s =>
+			val attr = s.getAttributes().get("samaccountname")
+			if (attr != null)
+				Some(attr.get().toString())
+			else None //:: Nil
+		})
 
-			env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
-			env.put(Context.PROVIDER_URL, url)
-			env.put(Context.SECURITY_AUTHENTICATION, "simple")
-			env.put(Context.SECURITY_PRINCIPAL, "CN=Git Server,OU=System,OU=Schantz,DC=schantz,DC=com")
-			env.put(Context.SECURITY_CREDENTIALS, "85ukUtru")
-			val context = new InitialDirContext(env)
-			println("URL=" + url)
-			//			ldap://dc.schantz.com:389/DC=schantz,DC=com??sub?(objectClass=user)
-			val ctrl = new SearchControls()
-			val query1 = "(objectClass=user)"
-			println("query: " + query1)
-			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE)
-			val enumeration = context.search("", query1, ctrl)
-			val groups = enumeration.map(e => {
-				val attribs = e.asInstanceOf[SearchResult].getAttributes()
-				attribs.get("samaccountname").get().toString()
-
-			})
-			return groups.toList
-		} catch {
-			case e: Exception => e.printStackTrace()
-		}
-		return Nil
 	}
 
 	def getAllGroups: List[String] = {
-		//		val username = "gitserver"
-		//		val domainName = hostname.substring(hostname.indexOf(".") + 1, hostname.length())
-		//		val serverName = hostname.substring(0, hostname.indexOf("."))
-		//
-		//		System.out.println("Authenticating " + username + "@" + domainName + " through " + serverName + "." + domainName);
-		//
-		//		// bind by using the specified username/password
-		//		val props = new Hashtable[String, String]()
-		//		val principalName = username + "@" + domainName;
-		//		props.put(Context.SECURITY_PRINCIPAL, dn)
-		//		props.put(Context.SECURITY_CREDENTIALS, ldap_bind_pw);
-		//
-		//		val context = LdapCtxFactory.getLdapCtxInstance(url, props);
-		//		System.out.println("Authentication succeeded!");
-		//
-		//		// locate this user's record
-		//		val controls = new SearchControls();
-		//		controls.setSearchScope(SUBTREE_SCOPE);
-		//		val renum = context.search(toDC(domainName), "(objectClass=group)", controls)
-		//		
-		//		if (!renum.hasMore()) {
-		//			System.out.println("Cannot locate user information for " + username);
-		//			Nil
-		//		} else {
-		//			val groups = renum.flatMap(f => {
-		////				println("Attributes: "+f.getAttributes())
-		//				val attr = f.getAttributes().get("displayName")
-		//				if(attr != null)
-		//				 Some(f.getAttributes().get("displayName").get().toString())
-		//				 else None//:: Nil
-		//			})
-		//			return groups.toList
-		//		}
 		extractDataFromLDAP("(objectClass=group)", { s =>
 			val attr = s.getAttributes().get("displayName")
 			if (attr != null)
