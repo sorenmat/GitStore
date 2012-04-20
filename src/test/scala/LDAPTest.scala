@@ -12,7 +12,10 @@ object LDAPTest {
 
 	def main(args: Array[String]) {
 		MongoDB.defineDb(DefaultMongoIdentifier, new Mongo, "GitStore")
-		println(LDAPUtil.getGroups)
+		println(LDAPUtil.getGroups("soren").toSet)
+		println("-----------")
+		println(LDAPUtil.getAllGroups)
 		println(LDAPUtil.getUsers)
+		
 	}
 }

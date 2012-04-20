@@ -15,7 +15,7 @@ object MyBuild extends Build {
 		resolvers += "jgit repository" at "http://eclipse.ialto.org/jgit/maven/")
 	
 	val liftVersion = "2.4-RC1"
-	val jgitVersion = "1.2.0.201112221803-r"
+	val jgitVersion = "1.3.0.201202151440-r"
 	def jetty73Dependencies =
 		Seq("javax.servlet" % "servlet-api" % "2.5" % "provided",
 			"net.liftweb" %% "lift-webkit" % liftVersion % "compile->default" withSources (),
@@ -35,9 +35,12 @@ object MyBuild extends Build {
 			"org.eclipse.jetty" % "jetty-webapp" % "8.0.1.v20110908" % "container",
 			"javax.servlet" % "servlet-api" % "2.5" % "provided",
 			
+			"ch.qos.logback" % "logback-core" % "1.0.1",
+			"ch.qos.logback" % "logback-classic" % "1.0.1",
 			
 			"org.markdownj" % "markdownj" % "0.3.0-1.0.2b4",
 			"org.gitective" % "gitective-core" % "0.9.4",
+			
 			
 			"org.eclipse.jgit" % "org.eclipse.jgit" % jgitVersion,
 			"org.eclipse.jgit" % "org.eclipse.jgit.http.server" % jgitVersion)

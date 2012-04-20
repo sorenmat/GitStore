@@ -6,6 +6,7 @@ object GroupHelper {
 
 	def getGroupAuthProvider = {
 		if (ServerSetup.instance.ldap_enabled.get) {
+			println("Using LDAP")
 			new LDAPGroupProvider
 //			new LDAPGroupProvider
 		} else {

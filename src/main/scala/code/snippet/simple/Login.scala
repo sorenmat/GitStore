@@ -52,8 +52,12 @@ class Login {
 			val authenticated = LDAPUtil.authenticate(username, passwd)
 			println("User '" + username + "' was authenticated")
 			val users = User.findAll(new BasicDBObject(User.username.toString(), username))
-			users.head.password(passwd).save // password should not be in plain text
-			users
+			if (users.isEmpty) {
+				List[User]()
+			} else {
+				users.head.password(passwd).save // password should not be in plain text
+				users
+			}
 		} else
 			List[User]()
 	}

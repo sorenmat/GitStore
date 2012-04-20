@@ -35,7 +35,7 @@ class ShowRepository extends Logger {
 
 		val builder = new FileRepositoryBuilder();
 		val repoFile = new File(repodir, repoName + "/.git")
-		println("Repo file: " + repoFile + " " + repoFile.exists())
+		info("Repo file: " + repoFile + " " + repoFile.exists())
 		val repo = (builder.setGitDir(repoFile)
 			.readEnvironment() // scan environment GIT_* variables
 			.findGitDir()).build();

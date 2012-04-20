@@ -54,33 +54,6 @@ object LDAPUtil {
 	}
 
 	def getUsers: List[String] = {
-//		val query = ldap_user_searchString
-//		try {
-//			val env = new Hashtable[String, String]()
-//
-//			env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory")
-//			env.put(Context.PROVIDER_URL, url)
-//			env.put(Context.SECURITY_AUTHENTICATION, "simple")
-//			env.put(Context.SECURITY_PRINCIPAL, "CN=Git Server,OU=System,OU=Schantz,DC=schantz,DC=com")
-//			env.put(Context.SECURITY_CREDENTIALS, "85ukUtru")
-//			val context = new InitialDirContext(env)
-//			println("URL=" + url)
-//			//			ldap://dc.schantz.com:389/DC=schantz,DC=com??sub?(objectClass=user)
-//			val ctrl = new SearchControls()
-//			val query1 = "(objectClass=user)"
-//			println("query: " + query1)
-//			ctrl.setSearchScope(SearchControls.SUBTREE_SCOPE)
-//			val enumeration = context.search("", query1, ctrl)
-//			val groups = enumeration.map(e => {
-//				val attribs = e.asInstanceOf[SearchResult].getAttributes()
-//				attribs.get("samaccountname").get().toString()
-//
-//			})
-//			return groups.toList
-//		} catch {
-//			case e: Exception => e.printStackTrace()
-//		}
-//		return Nil
 		extractDataFromLDAP("(objectClass=user)", { s =>
 			val attr = s.getAttributes().get("samaccountname")
 			if (attr != null)
@@ -100,7 +73,7 @@ object LDAPUtil {
 
 	}
 
-	def extractDataFromLDAP(searchString: String, filterFunc: (SearchResult) => Option[String]) : List[String] =  {
+	def extractDataFromLDAP(searchString: String, filterFunc: (SearchResult) => Option[String]): List[String] = {
 		val username = "gitserver"
 		val domainName = hostname.substring(hostname.indexOf(".") + 1, hostname.length())
 		val serverName = hostname.substring(0, hostname.indexOf("."))

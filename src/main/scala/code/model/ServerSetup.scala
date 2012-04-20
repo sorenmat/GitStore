@@ -4,6 +4,7 @@ import net.liftweb.mongodb.record.field.ObjectIdPk
 import net.liftweb.mongodb.record.MongoRecord
 import net.liftweb.mongodb.record.MongoMetaRecord
 import net.liftweb.record.field.StringField
+import net.liftweb.record.field.PasswordField
 import net.liftweb.record.field.BooleanField
 
 class ServerSetup extends MongoRecord[ServerSetup] with ObjectIdPk[ServerSetup] {

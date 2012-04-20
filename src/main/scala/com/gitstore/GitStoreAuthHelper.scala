@@ -41,6 +41,7 @@ object GitStoreAuthHelper extends Loggable {
 					user match {
 						case Full(u) => checkUserAccessToRepository(u, db)
 						case Empty => {
+							logger.info(username+" not found in database, creating it now.")
 							val user = User.createRecord.username(username)
 							user.save
 							checkUserAccessToRepository(user, db)
@@ -59,14 +60,18 @@ object GitStoreAuthHelper extends Loggable {
 	}
 
 	def checkUserAccessToRepository(user: User, db: Repository) {
-		logger.debug("Direcotry name: " + db.getDirectory().getParentFile().getName())
+		logger.info("Direcotry name: " + db.getDirectory().getParentFile().getName())
 		val repositoryName = db.getDirectory().getParentFile().getName()
 		val repoOption = code.model.Repository.find(new BasicDBObject("name", repositoryName))
 		repoOption match {
 			case Full(repo) =>
 				val userGroups = LDAPUtil.getGroups(user.username.get).toSet
-				if (!repo.groups.get.toSet.subsetOf(userGroups))
+				
+				if (!repo.groups.get.toSet.subsetOf(userGroups)) {
+					logger.info("User '"+user.username.toString()+" 'hasn't access to the repository")
 					throw new ServiceNotAuthorizedException()
+					
+				}
 				logger.debug("User has access to repo")
 			case Empty => {
 				throw new ServiceNotAuthorizedException()

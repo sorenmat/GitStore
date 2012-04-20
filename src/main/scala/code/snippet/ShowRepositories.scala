@@ -55,18 +55,27 @@ class ShowRepositories extends Logger {
 		val repos = (files.filter(f => f.isDirectory())).filter(f => (new File(f, ".git").exists()))
 
 		//		val userGroups = WebSession.loggedInUser.openOr(User).groups
-
+		//		Repository.findAll.foreach(r => println("Found repository: "+r.name))
 		val accessibleRepos = repos.filter(r => {
-			val repo = Repository.find(new BasicDBObject(Repository.name.toString(), r.getName))
-			println("Found repository in database: " + repo)
-			val showRepo = repo match {
-				case Full(x) => {
-					AuthHelper.hasUserAccess(WebSession.loggedInUser.openOr(User).username.get, x.name.get)
+			if (!WebSession.loggedInUser.isEmpty) {
+
+				val repo = Repository.find(new BasicDBObject("name", r.getName))
+				println("Found repository in database: " + repo)
+				val showRepo = repo match {
+					case Full(x) => {
+						AuthHelper.hasUserAccess(WebSession.loggedInUser.openOr(User).username.get, x.name.get)
+					}
+					case Empty => true
+					case Failure(_, _, _) => false
 				}
-				case Empty => true
-				case Failure(_, _, _) => false
-			}
-			showRepo || WebSession.loggedInUser.openOr(User).isAdmin.get || ss.public.get
+				println("showRepo: " + showRepo)
+				println("isPublic: " + ss.public.get)
+				if (showRepo || WebSession.loggedInUser.openOr(User).isAdmin.get)
+					true
+				else
+					ss.public.get
+			} else
+				ss.public.get
 		})
 		accessibleRepos.flatMap(c => {
 			val start = System.currentTimeMillis()
