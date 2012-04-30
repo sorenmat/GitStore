@@ -12,8 +12,9 @@ import net.liftweb.http.S
 import net.liftweb.util.Helpers.bind
 import net.liftweb.util.Helpers.strToSuperArrowAssoc
 import net.liftweb.widgets.autocomplete.AutoComplete
-import com.gitstore.auth.UserHelper
-class RepositorySettings extends RepositoryContextPage  {
+import com.gitstore.auth.UserProviderHelper
+
+class RepositorySettings extends RepositoryContextPage {
 
 	def content(form: NodeSeq) = {
 		var userSelectedGroups: List[String] = Nil
@@ -23,10 +24,9 @@ class RepositorySettings extends RepositoryContextPage  {
 			newRepo
 		})
 
-		
 		val groups = GroupHelper.getGroupAuthProvider.groups
-		println("Found the following groups "+groups.mkString(","))
-		
+		println("Found the following groups " + groups.mkString(","))
+
 		def checkAndSave(): Unit = {
 			repo.read_write_groups(userSelectedGroups)
 			println("saving groups: " + repo.read_write_groups)
@@ -36,7 +36,7 @@ class RepositorySettings extends RepositoryContextPage  {
 		def doBind(form: NodeSeq) = {
 			val selectedGroups = repo.read_write_groups.get
 			println("DB groups: " + selectedGroups.mkString(", "))
-			val repoUsers = UserHelper.getUserProvider.users
+			val repoUsers = UserProviderHelper.getUserProvider.users
 			bind("serveradmin", form,
 				"groups" -> multiSelect(GroupHelper.getGroupAuthProvider.groups.map(r => (r, r)).toSeq, selectedGroups, selected => userSelectedGroups = selected),
 				"users" -> multiSelect(repoUsers.map(u => (u.toString, u.toString)), Seq(), v => {}), //FIXME maybe.

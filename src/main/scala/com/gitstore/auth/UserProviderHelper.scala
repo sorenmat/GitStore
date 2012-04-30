@@ -5,7 +5,7 @@ import com.gitstore.admin.UserProvider
 import com.gitstore.auth.ldap.LDAPUserProvider
 import com.gitstore.admin.DefaultUserProvider
 
-object UserHelper {
+object UserProviderHelper {
 
 	def getUserProvider = {
 		if (ServerSetup.instance.ldap_enabled.get) {

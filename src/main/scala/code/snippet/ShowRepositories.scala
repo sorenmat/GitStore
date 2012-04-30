@@ -54,8 +54,6 @@ class ShowRepositories extends Logger {
 		val files = getRepositoriesFromFileSystem
 		val repos = (files.filter(f => f.isDirectory())).filter(f => (new File(f, ".git").exists()))
 
-		//		val userGroups = WebSession.loggedInUser.openOr(User).groups
-		//		Repository.findAll.foreach(r => println("Found repository: "+r.name))
 		val accessibleRepos = repos.filter(r => {
 			if (!WebSession.loggedInUser.isEmpty) {
 
@@ -108,9 +106,6 @@ class ShowRepositories extends Logger {
 					val daysMap = combinedMap.sortWith((elm, elm1) => elm._1.isBefore(elm1._1)).map(f => f._2).toList
 					repo.close()
 
-					//					println(commitCountsPerDay.mkString("\n"))
-					//					println("********")
-					//					println(commitsPrDay.mkString("\n"))
 					val data1 = JsArray(daysMap.map(f => JsArray(f)).takeRight(30): _*)
 
 					(data1, opts)
