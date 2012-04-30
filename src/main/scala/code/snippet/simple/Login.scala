@@ -17,6 +17,7 @@ import net.liftweb.util.Helpers.bind
 import net.liftweb.util.Helpers.strToSuperArrowAssoc
 import com.mongodb.BasicDBObject
 import net.liftweb.common.Failure
+import code.helpers.UserHelper
 
 class Login {
 	def render(in: NodeSeq): NodeSeq = {
@@ -32,33 +33,14 @@ class Login {
 				"username" -%> text("username", text => username = text),
 				"password" -%> password("password", text => passwd = text),
 				"submit" -%> submit("Login", () => {
-					val user = getUser(username, passwd)
-					if (user.isEmpty) {
-						println("woring username or password ")
-					} else {
-						val u = user.head
-						WebSession.loggedInUser(Full(u))
-						println("user " + u.username + " logged in")
-					}
+					val user = UserHelper.getUser(username, passwd)
+					WebSession.loggedInUser(Full(user))
+					println("user " + user.username + " logged in")
 				}))
 
 			case Failure(_, _, _) => NodeSeq.Empty
 
 		}
 	}
-	def getUser(username: String, passwd: String) = {
-		println("is ldap enabled " + ServerSetup.instance.ldap_enabled.get)
-		if (ServerSetup.instance.ldap_enabled.get) {
-			val authenticated = LDAPUtil.authenticate(username, passwd)
-			println("User '" + username + "' was authenticated")
-			val users = User.findAll(new BasicDBObject(User.username.toString(), username))
-			if (users.isEmpty) {
-				List[User]()
-			} else {
-				users.head.password(passwd).save // password should not be in plain text
-				users
-			}
-		} else
-			List[User]()
-	}
+
 }

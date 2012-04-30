@@ -30,43 +30,39 @@ class GitStoreReceivePackFactory extends ReceivePackFactory[HttpServletRequest] 
 
 	override def create(req: HttpServletRequest, db: Repository): ReceivePack = {
 		println("git store create...")
-		try {
 
-			val cfg = db.getConfig().get(CONFIG);
-			GitStoreAuthHelper.getUsernameAndPasswordFromRequest(req) match {
-				case Some(x) => {
-					var user = x._1
-					GitStoreAuthHelper.checkAuth(req, null, db, writeAccess = false) // resp null, should not fail with auth exception
-					// TODO Check for push access..
-
-					//			val usernameAndPassword = GitStoreAuthHelper.getUsernameAndPasswordFromRequest(req)
-					//			println("USER INFO: "+usernameAndPassword._1+" - "+usernameAndPassword._2)
-
-					//			info("User principal " + req.getUserPrincipal())
-					//			if (cfg.set) {
-					//				if (cfg.enabled) {
-					//					info("Config enabled")
-					//					if (user == null || "".equals(user))
-					//						user = "anonymous";
-					//					return createFor(req, db, user);
-					//				}
-					//				throw new ServiceNotEnabledException();
-					//			}
-					//			info("Remote User " + user)
-
-					//			if (user != null && !"".equals(user))
-					return createFor(req, db, user);
-					//			throw new ServiceNotAuthorizedException();
+		val cfg = db.getConfig().get(CONFIG);
+		GitStoreAuthHelper.getUsernameAndPasswordFromRequest(req) match {
+			case Some(x) => {
+				var user = x._1
+				val accessOk = GitStoreAuthHelper.checkAuth(req, db, writeAccess = true) // resp null, should not fail with auth exception
+				if (!accessOk) {
+					throw new ServiceNotAuthorizedException();
 				}
-				case None => 
+				// TODO Check for push access..
+
+				//			val usernameAndPassword = GitStoreAuthHelper.getUsernameAndPasswordFromRequest(req)
+				//			println("USER INFO: "+usernameAndPassword._1+" - "+usernameAndPassword._2)
+
+				//			info("User principal " + req.getUserPrincipal())
+				//			if (cfg.set) {
+				//				if (cfg.enabled) {
+				//					info("Config enabled")
+				//					if (user == null || "".equals(user))
+				//						user = "anonymous";
+				//					return createFor(req, db, user);
+				//				}
+				//				throw new ServiceNotEnabledException();
+				//			}
+				//			info("Remote User " + user)
+
+				//			if (user != null && !"".equals(user))
+				return createFor(req, db, user);
+				//			throw new ServiceNotAuthorizedException();
 			}
-		} catch {
-			case t: Throwable => {
-				t.printStackTrace()
-				error(t)
-			}
+			case None => null //TODO fix this ugly null
 		}
-		throw new RuntimeException("Should not occur...")
+
 	}
 
 	def createFor(req: HttpServletRequest, db: Repository, user: String): ReceivePack = {

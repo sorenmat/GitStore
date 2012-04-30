@@ -1,18 +1,19 @@
 package com.gitstore
 import java.nio.charset.Charset
+
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.transport.resolver.ServiceNotAuthorizedException
 import org.eclipse.jgit.util.Base64
+
 import com.gitstore.auth.LDAPUtil
 import com.mongodb.BasicDBObject
+
 import code.model.User
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 import net.liftweb.common.Empty
 import net.liftweb.common.Failure
 import net.liftweb.common.Full
 import net.liftweb.common.Loggable
-import code.model.ServerSetup
 
 object GitStoreAuthHelper extends Loggable {
 	val BASIC = "Basic"
@@ -24,9 +25,11 @@ object GitStoreAuthHelper extends Loggable {
 	 * If the server is public all checks are disabled.
 	 *
 	 */
-	def checkAuth(req: HttpServletRequest, resp: HttpServletResponse, db: Repository, writeAccess: Boolean) {
+	def checkAuth(req: HttpServletRequest, db: Repository, writeAccess: Boolean): Boolean = {
 		try {
-			val public = ServerSetup.findAll.head.public.get
+			//			val public = ServerSetup.findAll.head.public.get
+			//			if(public)
+			//				return true
 			getUsernameAndPasswordFromRequest(req) match {
 				case Some(x) => {
 					val username = x._1
@@ -41,16 +44,14 @@ object GitStoreAuthHelper extends Loggable {
 					user match {
 						case Full(u) => {
 							logger.info("User '" + username + "' found in database, checking access")
-							if (!public)
-								checkUserAccessToRepository(u, db, writeAccess)
+							return checkUserAccessToRepository(u, db, writeAccess)
 
 						}
 						case Empty => {
 							logger.info(username + " NOT found in database, creating it now.")
 							val user = User.createRecord.username(username)
 							user.save
-							if (!public)
-								checkUserAccessToRepository(user, db, writeAccess)
+							return checkUserAccessToRepository(user, db, writeAccess)
 						}
 						case Failure(_, _, _) =>
 							throw new ServiceNotAuthorizedException()
@@ -58,16 +59,14 @@ object GitStoreAuthHelper extends Loggable {
 
 				}
 				case None => {
-					resp.setHeader("WWW-Authenticate", CHALLENGE)
-					resp.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+					return false
 
 				}
 			}
 		} catch {
 			case e: Exception => {
-				resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE)
 				e.printStackTrace();
-				throw new ServiceNotAuthorizedException()
+				return false
 			}
 		}
 	}
@@ -85,18 +84,18 @@ object GitStoreAuthHelper extends Loggable {
 			case Full(repo) =>
 				val userGroups = LDAPUtil.getGroups(user.username.get).toSet
 
-				if (writeAccess)
+				if (writeAccess) {
 					if (repo.read_write_groups.get.toSet.subsetOf(userGroups)) {
 						logger.debug("User has access to repo")
 						return true
 					}
-
-				if (!writeAccess)
+				}
+				if (!writeAccess) {
 					if (repo.read_groups.get.toSet.subsetOf(userGroups)) {
 						logger.debug("User has access to repo")
 						return true
 					}
-
+				}
 				throw new ServiceNotAuthorizedException()
 			//				
 			//				if (!repo.read_write_groups.get.toSet.subsetOf(userGroups)) {

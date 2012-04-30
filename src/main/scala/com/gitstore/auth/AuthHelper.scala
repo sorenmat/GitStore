@@ -12,6 +12,11 @@ object AuthHelper {
 		val repoGroups = repo.get.read_groups.get
 		repoGroups.find(g => userGroups.contains(g)) match {
 			case Some(x) => return true
+			case None => 
+		}
+		val repoWriteGroups = repo.get.read_write_groups.get
+		repoWriteGroups.find(g => userGroups.contains(g)) match {
+			case Some(x) => return true
 			case _ => return false
 		}
 	}

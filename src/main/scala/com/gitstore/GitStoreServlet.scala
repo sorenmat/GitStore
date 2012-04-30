@@ -61,8 +61,14 @@ class GitStoreServlet extends GitServlet with Logger {
 		val gitdir = new File(basePath, repositoryName);
 		val db = RepositoryCache.open(FileKey.lenient(gitdir, FS.DETECTED), true)
 
-		GitStoreAuthHelper.checkAuth(req, resp, db, writeAccess = false)
-		super.service(req, resp)
+		val accessOk = GitStoreAuthHelper.checkAuth(req, db, writeAccess = false)
+		if(!accessOk) {
+			resp.setHeader("WWW-Authenticate", CHALLENGE)
+			resp.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+		} else{
+
+			super.service(req, resp)
+		}
 	}
 
 }
