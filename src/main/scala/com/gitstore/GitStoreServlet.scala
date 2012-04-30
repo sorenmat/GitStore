@@ -24,11 +24,11 @@ class GitStoreServlet extends GitServlet with Logger {
 	val CHALLENGE = "Basic" + " realm=\"Gitstore\""
 
 	def configMap = Map("base-path" -> ServerSetup.findAll.head.basepath.toString, "export-all" -> "true")
-	
+
 	override def init(config: ServletConfig) {
 		try {
 			info("Starting git store servlet..")
-			
+
 			setReceivePackFactory(new GitStoreReceivePackFactory())
 			setUploadPackFactory(new GitStoreUploadPackFactory())
 
@@ -37,7 +37,7 @@ class GitStoreServlet extends GitServlet with Logger {
 				override def getServletName(): String = this.getClass().getName()
 				override def getInitParameter(name: String) = {
 					println("Trying to get init parm name " + name)
-//					config.getInitParameter(name)
+					//					config.getInitParameter(name)
 					configMap(name)
 				}
 
@@ -61,7 +61,7 @@ class GitStoreServlet extends GitServlet with Logger {
 		val gitdir = new File(basePath, repositoryName);
 		val db = RepositoryCache.open(FileKey.lenient(gitdir, FS.DETECTED), true)
 
-		GitStoreAuthHelper.checkAuth(req, resp, db)
+		GitStoreAuthHelper.checkAuth(req, resp, db, writeAccess = false)
 		super.service(req, resp)
 	}
 

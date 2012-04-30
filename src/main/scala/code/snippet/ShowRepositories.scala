@@ -63,7 +63,7 @@ class ShowRepositories extends Logger {
 				println("Found repository in database: " + repo)
 				val showRepo = repo match {
 					case Full(x) => {
-						AuthHelper.hasUserAccess(WebSession.loggedInUser.openOr(User).username.get, x.name.get)
+						AuthHelper.hasUserAccessRead(WebSession.loggedInUser.openOr(User).username.get, x.name.get)
 					}
 					case Empty => true
 					case Failure(_, _, _) => false

@@ -28,13 +28,13 @@ class RepositorySettings extends RepositoryContextPage  {
 		println("Found the following groups "+groups.mkString(","))
 		
 		def checkAndSave(): Unit = {
-			repo.groups(userSelectedGroups)
-			println("saving groups: " + repo.groups)
+			repo.read_write_groups(userSelectedGroups)
+			println("saving groups: " + repo.read_write_groups)
 			repo.save
 		}
 
 		def doBind(form: NodeSeq) = {
-			val selectedGroups = repo.groups.get
+			val selectedGroups = repo.read_write_groups.get
 			println("DB groups: " + selectedGroups.mkString(", "))
 			val repoUsers = UserHelper.getUserProvider.users
 			bind("serveradmin", form,

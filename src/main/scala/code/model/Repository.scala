@@ -12,7 +12,8 @@ class Repository private() extends MongoRecord[Repository] with ObjectIdPk[Repos
 
   object name extends StringField(this, 100)
   object path extends StringField(this, 100)
-  object groups extends MongoListField[Repository, String](this)
+  object read_groups extends MongoListField[Repository, String](this)
+  object read_write_groups extends MongoListField[Repository, String](this)
   
 }
 
