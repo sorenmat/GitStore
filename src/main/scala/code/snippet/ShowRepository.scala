@@ -90,4 +90,10 @@ class ShowRepository extends Logger {
 		val html = paths.map(path => <li>{ link(S.uri + "?repo=" + WebSession.repository.get, () => folder(path), Text(path)) }<span class="divider">/</span></li>)
 		html.toSeq
 	}
+	
+	def cloneURL: NodeSeq = {
+		val paths = folder.get.split("/")
+		val html = paths.map(path => <li>git clone {S.hostAndPath+"/git/"+WebSession.repository.get}</li>)
+		html.toSeq
+	}
 }

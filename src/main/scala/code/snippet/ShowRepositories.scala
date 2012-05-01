@@ -66,8 +66,7 @@ class ShowRepositories extends Logger {
 					case Empty => true
 					case Failure(_, _, _) => false
 				}
-				println("showRepo: " + showRepo)
-				println("isPublic: " + ss.public.get)
+				info("showRepo: " + showRepo+"\t isPublic: " + ss.public.get)
 				if (showRepo || WebSession.loggedInUser.openOr(User).isAdmin.get)
 					true
 				else
